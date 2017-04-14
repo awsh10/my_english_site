@@ -1,7 +1,6 @@
-from datetime import datetime
-
 from django.db import models
 from django.utils import timezone
+
 
 class EnglishWord(models.Model):
     english = models.CharField(primary_key=True,
@@ -13,7 +12,7 @@ class EnglishWord(models.Model):
 
     def save(self, *args, **kwargs):
         super().save()
-        if kwargs.get('save_statistics', True) == True:
+        if kwargs.get('save_statistics', True):
             s = Statistics(english=self)
             s.save()
 
@@ -29,7 +28,7 @@ class Statistics(models.Model):
     def __str__(self):
         return '{} {} {} '.format(self.english.english, self.date, self.access_count)
 
-    def save(self):
+    def save(self, *args, **kwargs):
         super().save()
         en_words = Statistics.objects.filter(english=self.english)
         self.access_count = len(en_words)
@@ -43,13 +42,3 @@ class Statistics(models.Model):
             self.access_count = len(en_word.english_words.all())
         else:
             print('No ehglish word')
-
-
-
-
-
-
-
-
-
-
