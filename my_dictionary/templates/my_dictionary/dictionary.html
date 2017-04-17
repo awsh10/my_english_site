@@ -1,14 +1,38 @@
+{% load staticfiles %}
+
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Title</title>
-    </head>
-    <body>
-         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <head>
+    <meta charset="UTF-8">
+    <title>My enhlish dictionary</title>
+  </head>
+  <body>
+    <h1> {{greeting}} </h1>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+      <p id="server-data" data-url="{% url 'dictionary' %}"></p>
+      <p><label for="english-word">English word</label>
+        <input id="english-word">
+        <label for="transcription">Transcription</label>
+        <input id="transcription" >
+        <label for="russian-word">Russian word</label>
+        <input id="russian-word">
+        <label for="access-count">Access count</label>
+        <input id="access-count">
+      </p>
+      <p>Action
+        <button id="find">Find</button>
+        <button id="insert">Insert</button>
+        <button id="remove">Remove</button>
+      </p>
+
+
+
+
+
     </body>
 </html>
 
-% block basejs %}
-    <script src="{% static 'dictionary/dictionary.js' %}"> </script>
+{% block basejs %}
+    <script src="{% static 'my_dictionary/dictionary.js' %}"> </script>
 {% endblock basejs %}
