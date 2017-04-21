@@ -9,22 +9,27 @@
   <body>
     <h1> {{greeting}} </h1>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-
+    <fieldset id="mode">
+      <legend>Mode</legend>
+      <span><input class=mode id="find" name="mode" type="radio" value="find" checked>Find</span>
+      <span><input class=mode id="insert" name="mode" type="radio" value="insert">Insert</span>
+      <span><input class=mode id="remove" name="mode" type="radio" value="remove">Remove</span>
+      </fieldset>
       <p id="server-data" data-url="{% url 'dictionary' %}"></p>
       <p><label for="english-word">English word</label>
         <input id="english-word">
-        <label for="transcription">Transcription</label>
-        <input id="transcription" >
-        <label for="russian-word">Russian word</label>
-        <input id="russian-word">
-        <label for="access-count">Access count</label>
-        <input id="access-count">
+        <label class="not-find" hidden for="transcription">Transcription</label>
+        <input class="not-find" hidden id="transcription" >
+        <label class="not-find" hidden for="russian-word">Russian word</label>
+        <input class="not-find" hidden id="russian-word">
+        <label class="not-find" hidden for="access-count">Access count</label>
+        <input class="not-find" hidden id="access-count">
       </p>
       <p>Action
-        <button id="find">Find</button>
-        <button id="insert">Insert</button>
+        <button id="execute" class="exec">Execute</button>
+<!--        <button id="insert">Insert</button>
         <button id="remove">Remove</button>
-      </p>
+-->      </p>
 
 
 

@@ -1,20 +1,20 @@
 $(document).ready(function() {
-    $('#find').on('click', function() {
-        var url = $('#server-data').attr('data-url')
-        var englishWord = $('#english-word').val()
-        console.log (englishWord)
-        for (chr in englishWord) {
-            console.log(englishWord[chr]);
-        };
-        function insertValue(transcription, russianWord, accessCount) {
+
+    $('.exec').on('click', function() {
+      function insertValue(transcription, russianWord, accessCount) {
           $('#russian-word').val(russianWord);
           $('#transcription').val(transcription);
           $('#access_count').val(accessCount);
         };
 
-        //alert(englishWord.match(/[^a-z]/g).length)
-        if (englishWord.match(/[^a-z]/g) != null) {
-            msg = 'The word "' + englishWord + '" not exists!';
+      var url = $('#server-data').attr('data-url')
+      var englishWord = $('#english-word').val()
+
+      if ($('input[name=mode]:checked').val()==='find') {
+        insertValue('', '', '');
+
+        if (englishWord.match(/[^a-z]/g) != null || englishWord === '') {
+            msg = 'The expression "' + englishWord + '" is not a word!';
             alert(msg);
         } else {
             $.ajax({
@@ -29,19 +29,30 @@ $(document).ready(function() {
                 var obj = $.parseJSON(data);
 
                 if (obj === false) {
-                  var msg = 'The word "' + englishWord + '" not is found. To insert it ' +
-                           'in the dictionary fill the field ' +
-                           '"Russian word" at least!';
+                  var msg = 'The word "' + englishWord + '" not is found.';
+                  $('.not-find').attr('hidden', true);
                   alert(msg);
                  } else if (obj === englishWord) {
-                     insertValue(null, null, null)
+                     $('.not-find').attr('hidden', true);
+                     insertValue('', '', '')
                      msg = 'The path "' + englishWord + '" is not a word'
                      alert(msg)
                  } else {
                      insertValue(obj.transcription, obj.russian_word, obj.access_count)
+                     $('.not-find').attr('hidden', false);
                  }
             });
         }
+      };
 
+   });
+
+   $('.mode').on('click', function() {
+     if (this.value==='find') {
+       $('.not-find').attr('hidden', true);
+     } else {
+       $('.not-find').attr('hidden', false);
+     }
+     ;
    });
 });
