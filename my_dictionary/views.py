@@ -19,15 +19,25 @@ class DictionaryView(TemplateView):
 class FindEnglishWordView(View):
     def get(self, request, **kwargs):
         try:
-            en_word = EnglishWord.objects.get(pk=kwargs['english_word'])
-            data = {'transcription': en_word.transcription,
+            en_word = EnglishWord.objects.get(pk=request.GET['englishWord'])
+            data = {'english_word': en_word.english,
+                    'transcription': en_word.transcription,
                     'russian_word': en_word.russian,
                     'access_count': en_word.access_count}
-        except :
+        except:
             data = False
         return HttpResponse(json.dumps(data))
 
+
 class ErrorView(View):
     def get(self, request, **kwargs):
-        data = kwargs['path']
-        return HttpResponse(json.dumps(data))
+        if request.is_ajax:
+            data = kwargs['path']
+            return HttpResponse(json.dumps(data))
+
+
+class InsertWordView(View):
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax:
+            data = {'1': 'I am glad'}
+            return HttpResponse(json.dumps(data))
