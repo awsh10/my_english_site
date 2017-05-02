@@ -8,52 +8,46 @@ from my_dictionary.models import EnglishWord, Statistics
 class EnglishWordTestCase(TestCase):
 
     def setUp(self):
-        self.english_words, self.russian_words = ['invoke',
-                                                  'troughout'],\
-                                                 ['вызывать, активизировать, запускать',
-                                                  'через, на всем протяжении, везде, все время']
-        month_day_hour_minute = [[[1, 12, 21, 22],
-                                  [2, 21, 11, 22]],
-                                 [[1, 1, 14, 6],
-                                  [4, 15,  18, 10],
-                                  [9, 4, 17, 55],
-                                  [12, 11, 21, 21]]]
+        self.english_words_list = ['invoke', 'troughout']
+        self.russian_words_list = [['вызывать', 'активизировать', 'запускать'],
+                              ['через', 'на всем протяжении', 'везде, все время']]
+        self.month_day_hour_minute_list = [[[1, 12, 21, 22],[2, 21, 11, 22]],
+                                           [[1, 1, 14, 6],[4, 15,  18, 10],
+                                            [9, 4, 17, 55], [12, 11, 21, 21]]]
         year, accesses_count = 2016, []
 
-        def insert_word(engl_word, russian_word, date_time=None):
-            en_w = EnglishWord(english=engl_word, russian=russian_word)
+        def insert_word(english_word, russian_word, date_time=None):
+            english_word_obj = EnglishWord(english=english_word, russian=russian_word)
             if date_time:
-                en_w.date = date_time
-            en_w.save()
+                english_word_obj.date = date_time
+            english_word_obj.save()
 
-            st_ = en_w.statistics_set.get(english=en_w.english)
-            st_.date = en_w.date
-            st_.save()
-            return en_w
+            #statistic_obj = english_word_obj.statistics_set.get(english=english_word_obj.english)
+            #statistic_obj.date = english_word_obj.date
+            #statistic_obj.save()
+            return english_word_obj
 
-        for num, english_word in enumerate(self.english_words):
-            en_word = None
-            m_d_h_m_slice = month_day_hour_minute[num:num + 1][0]
-            if m_d_h_m_slice:
-                for i, m_d_h_m in enumerate(m_d_h_m_slice):
+        english_word_obj = None
+        for num, english_word in enumerate(self.english_words_list):
+            m_d_h_m_list = self.month_day_hour_minute_list[num:num + 1][0]
+            if m_d_h_m_list:
+                for i, m_d_h_m in enumerate(m_d_h_m_list):
                     month, day, hour, minute = m_d_h_m[0], m_d_h_m[1], m_d_h_m[2], m_d_h_m[3]
                     date_time = timezone.make_aware(datetime(year, month, day, hour, minute))
                     if i == 0:
-                        en_word = insert_word(english_word, self.russian_words[num], date_time)
+                        english_word_obj = insert_word(english_word, self.russian_words_list[num], date_time)
                     else:
-                        st = Statistics(english=en_word, date=date_time)
-                        st.save()
+                        statistic_obj = Statistics(english_word=english_word_obj, date=date_time)
+                        statistic_obj.save()
             else:
-                insert_word(english_word, self.russian_words[num])
+                insert_word(english_word, self.russian_words_list[num])
 
-    def _test_insert(self):
-        english_words = [en_word.english for en_word in EnglishWord.objects.all()]
-        self.assertNotEqual(english_words, self.english_words)
+    def test_insert(self):
+        english_words = [english_word_obj.english for english_word_obj in EnglishWord.objects.all()]
+        self.assertEqual(english_words, self.english_words_list)
 
-        print('uuuuuu')
-        print('en-words - ', english_words)
         for num, en_word in enumerate(EnglishWord.objects.all()):
-            print(en_word, num, 'zzzzz')
+            print(en_word, num)
             print(en_word.statistics_set.all())
 
         print(len(Statistics.objects.all()))
