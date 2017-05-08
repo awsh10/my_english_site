@@ -1,6 +1,5 @@
 $(document).ready(function() {
-
-  var englishWordObject = {
+  var englishWordObj = {
     'englishWord': '',
     'transcription': '',
     'russianWord': '',
@@ -11,11 +10,12 @@ $(document).ready(function() {
        this.russianWord = $('#russian-word').val();
     },
     'setDataToPage': function () {
-       $('#english-word').val(englishWordObject.englishWord);
-       $('#transcription').val(englishWordObject.transcription),
-       $('#russian-word').val(englishWordObject.russianWord);
+       $('#english-word').val(englishWordObj.englishWord);
+       $('#transcription').val(englishWordObj.transcription),
+       $('#russian-word').val(englishWordObj.russianWord);
+       $('access-count').val(englishWordObj.accessCount);
     },
-    'getDataFromServer': function(callback) {
+    'getDataFromServer': function(function_object) {
       $.ajax({
         url: this.url + 'find',
         type: "GET",
@@ -27,24 +27,54 @@ $(document).ready(function() {
         var obj = $.parseJSON(data);
 
         if (obj === false) {
-          var msg = 'The word "' + englishWordObject.englishWord  + '" is not found.';
+          var msg = 'The word "' + englishWordObj.englishWord  + '" is not found.';
+          englishWordObj.transcription = '';
+          englishWordObj.russianWord = '';
+          englishWordObj.accessCount = 0;
           alert(msg);
         } else {
-           englishWordObject.englishWord = obj.english_word;
-           englishWordObject.transcription = obj.transcription;
-           englishWordObject.russianWord = obj.russian_word;
-           englishWordObject.accessCount = obj.access_count;
+           englishWordObj.englishWord = obj.english_word;
+           englishWordObj.transcription = obj.transcription;
+           englishWordObj.russianWord = obj.russian_word;
+           englishWordObj.accessCount = obj.access_count;
            $('.not-find').attr('hidden', false);
-           if (callback) {
-             callback();
-           };
+        };
+
+        if (function_object) {
+          function_object();
         };
       });
     },
     'setDataToServer': function() {
+      this.csrf();
+      $.ajax({
+          url: this.url + 'insert/',
 
+          type: "POST",
+          data: {
+            'englishWord': englishWordObj.englishWord,
+            'transcription': this.transcription,
+            'russianWord': this.russianWord,
+          },
+          /*{
+              'englishWordObj': englishWordObj,
+          },*/
+          dataType: 'text'
+          })
+            .done(function(data) {
+              var obj = $.parseJSON(data);
+              console.log(obj);
+              alert(obj)
+/*
+              if (obj === false) {
+                var msg = 'The word "' + englishWord + '" not is found.';
+                $('.not-find').attr('hidden', true);
+                alert(msg);
+              }
+*/
+          });
     },
-    'match_word': function() {
+    'matchWord': function() {
       var return_value = {};
       if (this.englishWord.match(/[^a-z]/g) != null || this.englishWord === '') {
           msg = 'The expression "' + this.englishWord + '" is not a word!';
@@ -56,24 +86,77 @@ $(document).ready(function() {
           return_value.match = false;
       } else {
         return_value.match = true;
-      }
+      };
       return return_value;
     },
+    'matchRussianWord': function() {console.log('matchRusianWord')
+      var return_value = {};
+      if (this.russianWord.match(/[^а-я]/g) != null || this.russianWord === '') {
+          msg = 'The expression "' + this.russianWord + '" is not a word!';
+          //this.russianWord = '';
+          //this.transcription = '';
+          //this.accessCount = 0;
+          //this.setDataToPage();
+          return_value.msg = msg;
+          return_value.match = false;
+      } else {
+        return_value.match = true;
+      };
+      return return_value;
+    },
+    'csrf': function() {
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = $.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                   }
+               }
+           }
+            return cookieValue;
+       }
+
+        var csrftoken = getCookie('csrftoken');
+
+        function csrfSafeMethod(method) {
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+       }
+         $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+               }
+           }
+        });
+     },
   };
 
-  englishWordObject.url = $('#server-data').attr('data-url');
+  englishWordObj.url = $('#server-data').attr('data-url');
 
   $('.exec').on('click', function() {
-      englishWordObject.getDataFromPage();
+      englishWordObj.getDataFromPage();
       if ($('input[name=mode]:checked').val()==='find') {
         $('.not-find').attr('hidden', true);
-        if (englishWordObject.match_word().match===false) {
-          alert(englishWordObject.match_word().msg);
+        if (englishWordObj.matchWord().match===false) {
+          alert(englishWordObj.matchWord().msg);
         } else {
-          englishWordObject.getDataFromServer(englishWordObject.setDataToPage);
-          englishWordObject.setDataToPage();
-        }
+          englishWordObj.getDataFromServer(englishWordObj.setDataToPage);
+        };
+      } else if ($('input[name=mode]:checked').val()==='insert') {
+        if (englishWordObj.matchWord().match===false) {
+          alert(englishWordObj.matchWord().msg);
+        } else if (englishWordObj.matchRussianWord().match===false) {alert(11111)
+          alert(englishWordObj.matchRussianWord().msg);
+        } else {
+          englishWordObj.setDataToServer();
+        };
       };
+
 
    });
 
@@ -87,6 +170,7 @@ $(document).ready(function() {
 
 
 });
+
 /*
 
 
@@ -124,7 +208,7 @@ $(document).ready(function() {
             url: url + 'insert',
             type: "POST"
             data:{
-                'englishWordObject': englishWordObject,
+                'englishWordObj': englishWordObj,
             },
               dataType: 'text'
            })
