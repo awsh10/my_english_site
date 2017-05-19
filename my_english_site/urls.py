@@ -18,7 +18,7 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^my_dictionary/', include('my_dictionary.urls')),
-    url(r'^probability/', include(probability.urls)),
+    url(r'^probability/', include('probability.urls')),
     url(r'^admin/', admin.site.urls),
 ]
 
