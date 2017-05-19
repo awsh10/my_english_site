@@ -1,0 +1,51 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Probability</title>
+  </head>
+  <body>
+    <h1> Probablity </h1>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<!--
+    <fieldset id="mode">
+      <legend>Mode</legend>
+      <span><input class=mode id="find" name="mode" type="radio" value="find" checked>Find</span>
+      <span><input class=mode id="insert" name="mode" type="radio" value="insert">Insert</span>
+      <span><input class=mode id="remove" name="mode" type="radio" value="remove">Remove</span>
+    </fieldset>
+-->
+
+    <p id="server-data" data-url="{% url 'probability' %}"></p>
+      <p>
+        <label for="count">Experiments count</label>
+        <span id="count"></span>
+      </p>
+      <fieldset id="probabilities">
+        <legend>Probabilities</legend>
+        <span>hhhhhh</span>
+      </fieldset>
+
+        <label for=">English word</label>
+        <input id="english-word">
+        <label class="not-find" hidden for="transcription">Transcription</label>
+        <input class="not-find" hidden id="transcription" >
+        <label class="not-find" hidden for="russian-word">Russian word</label>
+        <input class="not-find" hidden id="russian-word">
+        <label class="not-find" hidden for="access-count">Access count</label>
+        <input class="not-find" hidden id="access-count">
+      </p>
+
+
+      <button id="run" class="run">Run</button>
+      <p><button id="click" class="click">Click</button></p>
+
+
+    </body>
+</html>
+
+{% block basejs %}
+  <script src="{% static 'probability/probability.js' %}"> </script>
+{% endblock basejs %}
